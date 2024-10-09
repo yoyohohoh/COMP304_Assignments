@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
 interface TasksRepository {
-    fun getTasks(): Flow<List<Task>>
+    fun loadTasks(): Flow<List<Task>>
     fun addTask(task: Task)
     fun updateTask(task: Task)
 }

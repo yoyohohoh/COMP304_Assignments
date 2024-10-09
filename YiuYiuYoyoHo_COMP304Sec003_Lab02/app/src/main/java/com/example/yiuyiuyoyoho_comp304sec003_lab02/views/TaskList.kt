@@ -116,20 +116,20 @@ fun TaskItem(task: Task,tasksViewModel: TasksViewModel) {
                 HorizontalDivider()
                 DropdownMenuItem(
                     text = { Text("NEW") },
-                    onClick = { Log.d("TasksViewModel", "Before update: ${task.status.name}")
-                        tasksViewModel.updateTaskStatus(task, Status.NEW)
-                        Log.d("TasksViewModel", "After update: ${task.status.name}")
-                    },
+                    onClick = { tasksViewModel.updateTaskStatus(task, Status.NEW)
+                        expanded.value = false},
                     trailingIcon = {StatusDot(Status.NEW)}
                 )
                 DropdownMenuItem(
                     text = { Text("PENDING") },
-                    onClick = { /* Handle settings! */ },
+                    onClick = { tasksViewModel.updateTaskStatus(task, Status.PENDING)
+                        expanded.value = false},
                     trailingIcon = {StatusDot(Status.PENDING)}
                 )
                 DropdownMenuItem(
                     text = { Text("CLOSED") },
-                    onClick = { /* Handle settings! */ },
+                    onClick = { tasksViewModel.updateTaskStatus(task, Status.CLOSED)
+                        expanded.value = false},
                     trailingIcon = {StatusDot(Status.CLOSED)}
                 )
 
