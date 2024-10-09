@@ -1,13 +1,14 @@
 package com.example.yiuyiuyoyoho_comp304sec003_lab02.data
 
 import java.time.LocalDate
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.MutableStateFlow
+
+
 
 class TasksRepositoryImpl : TasksRepository {
-    private val tasks = mutableListOf<Task>() // Mutable list to store tasks
-
-    init {
-        tasks.addAll(
-            listOf(
+    private val tasks = mutableListOf(
                 Task(
                     id = 1,
                     title = "Task 1",
@@ -29,12 +30,12 @@ class TasksRepositoryImpl : TasksRepository {
                     dueDate = LocalDate.of(2024, 10, 13),
                     status = Status.NEW
                 )
-            )
-        )
-    }
+    )
 
-    override fun getTasks(): List<Task> {
-        return tasks
+
+
+    override fun getTasks(): Flow<List<Task>> {
+        return flowOf(tasks)
     }
 
     override fun addTask(task: Task) {
@@ -47,4 +48,6 @@ class TasksRepositoryImpl : TasksRepository {
             tasks[index] = updatedTask
         }
     }
+
+
 }

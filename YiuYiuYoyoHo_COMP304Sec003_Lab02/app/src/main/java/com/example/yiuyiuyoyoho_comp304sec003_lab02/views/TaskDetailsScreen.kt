@@ -9,9 +9,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -27,40 +29,81 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.tooling.preview.Preview
 import java.time.LocalDate
 
-class TaskDetailsScreen {
-
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TaskDetailsScreen(onBackPressed: () -> Unit, task: Task) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(text = "Task Details")
+                },
+                colors = TopAppBarDefaults.smallTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                ),
+                navigationIcon = {
+                    IconButton(
+                        onClick = onBackPressed,
+                        content = {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Back"
+                            )
+                        }
+                    )
+                }
+            )
+        },
+        content = { paddingValues ->
+            // Apply padding only where necessary
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(paddingValues)
+                    .padding(16.dp) // Optional extra padding for content
+            ) {
+                TaskDetailsScreenContent(
+                    modifier = Modifier.fillMaxWidth(),
+                    task = task
+                )
+            }
+        }
+    )
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun TaskDetailsScreenContent(task: Task) {
+fun TaskDetailsScreenContent(modifier: Modifier, task: Task) {
     Column(
-
+        modifier = modifier
+            .fillMaxWidth()
     ) {
         // Title
         Text(
             text = "Title: ${task.title}",
-            style = MaterialTheme.typography.titleLarge
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(bottom = 8.dp) // Space between elements
         )
 
         // Description
         Text(
             text = "Description: ${task.description}",
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(bottom = 8.dp)
         )
 
         // Due Date
         Text(
             text = "Due Date: ${task.dueDate}",
-            style = MaterialTheme.typography.bodySmall
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier.padding(bottom = 8.dp)
         )
 
-        // Status
+        // Status with FlowRow and SuggestionChip
         FlowRow(
             modifier = Modifier
                 .padding(start = 6.dp, end = 6.dp)
         ) {
-
             SuggestionChip(
                 modifier = Modifier
                     .padding(start = 3.dp, end = 3.dp),
@@ -69,7 +112,6 @@ fun TaskDetailsScreenContent(task: Task) {
                     Text(text = task.status.name)
                 }
             )
-
         }
     }
 }
@@ -77,5 +119,8 @@ fun TaskDetailsScreenContent(task: Task) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewTaskDetails() {
-    TaskDetailsScreenContent(Task(1, "Sample", "This is a sample.", LocalDate.of(2024, 10, 11), Status.NEW))
+    TaskDetailsScreen(
+        onBackPressed = { /* Do nothing for preview */ },
+        task = Task(1, "Sample Task", "This is a sample description.", LocalDate.of(2024, 10, 11), Status.NEW)
+    )
 }
