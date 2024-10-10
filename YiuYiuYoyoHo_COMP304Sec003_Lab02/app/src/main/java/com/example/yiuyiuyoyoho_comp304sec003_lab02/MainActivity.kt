@@ -2,6 +2,7 @@ package com.example.yiuyiuyoyoho_comp304sec003_lab02
 
 import android.os.Bundle
 import android.util.Log
+import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -23,7 +24,7 @@ import java.time.LocalDate
 
 class MainActivity : ComponentActivity() {
     val tasksViewModel: TasksViewModel by viewModels()
-
+    var _taskID: Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -43,22 +44,25 @@ class MainActivity : ComponentActivity() {
             composable(Activities.HomeActivity.route) {
                 HomeActivity(
                     tasksViewModel = tasksViewModel,
-                    navigationToViewActivity = {taskID ->
+                    navigationToViewActivity = {task ->
                         navController.navigate(
-                        "${Activities.ViewTaskActivity.route}/$taskID")
+                        "${Activities.ViewTaskActivity.route}/${task.id}")
+                        _taskID = task.id
+                        Log.d("Main Home Call", "I am Calling ${_taskID}")
                     },
                             navigationToCreateActivity = {
                         navController.navigate("${Activities.CreateTaskActivity.route}")
                     }
+
                 )
             }
 
-            composable(
-                route = "${Activities.ViewTaskActivity.route}/{taskID}") {
+            composable(route = "${Activities.ViewTaskActivity.route}/{taskID}") {
 //                    backStackEntry ->
 //                val taskID = backStackEntry.arguments?.getString("taskID")?.toIntOrNull() ?: 0
-                val taskID = 2
-                Log.d("MainActivity", "Retrieved taskID: $taskID")
+                Log.d("Main View Call", "I am Calling ${_taskID}")
+                val taskID = _taskID
+                //Log.d("MainActivity", "Retrieved taskID: $taskID")
                 val currentTask = tasksViewModel.getTaskByID(taskID)
 
                 if (currentTask != null) {
@@ -79,7 +83,7 @@ class MainActivity : ComponentActivity() {
             }
 
             composable(route = "${Activities.EditTaskActivity.route}/{taskID}") {
-                val taskID =1
+                val taskID =_taskID
                 val currentTask = tasksViewModel.getTaskByID(taskID)
 
                 if (currentTask != null) {

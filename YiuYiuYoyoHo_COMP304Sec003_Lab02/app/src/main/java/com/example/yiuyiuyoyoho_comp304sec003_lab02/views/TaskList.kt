@@ -78,6 +78,7 @@ fun TaskItem(task: Task,tasksViewModel: TasksViewModel, onTaskClicked: (Task) ->
         modifier = Modifier
             .clickable {
                 onTaskClicked(task)
+                Log.d("TaskList", "I am clicking ${task.id}")
             }
             .fillMaxWidth()
             .padding(6.dp)
