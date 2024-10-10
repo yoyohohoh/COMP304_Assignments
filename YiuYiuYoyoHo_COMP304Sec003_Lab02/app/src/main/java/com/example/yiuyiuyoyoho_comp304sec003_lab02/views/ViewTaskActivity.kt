@@ -18,6 +18,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.example.yiuyiuyoyoho_comp304sec003_lab02.data.Status
 import com.example.yiuyiuyoyoho_comp304sec003_lab02.data.Task
@@ -41,6 +43,7 @@ fun ViewTaskActivity(task: Task, navigationToHomeActivity:() -> Unit, navigation
                 navigationIcon = {
                     IconButton(
                         onClick = {navigationToHomeActivity()},
+                        modifier = Modifier.semantics { contentDescription = "Home" },
                         content = {
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
@@ -54,7 +57,8 @@ fun ViewTaskActivity(task: Task, navigationToHomeActivity:() -> Unit, navigation
 
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {navigationToEditActivity()}
+                onClick = {navigationToEditActivity()},
+                modifier = Modifier.semantics { contentDescription = "Edit Task" }
             ) {
                 Icon(
                     imageVector = Icons.Default.Edit,

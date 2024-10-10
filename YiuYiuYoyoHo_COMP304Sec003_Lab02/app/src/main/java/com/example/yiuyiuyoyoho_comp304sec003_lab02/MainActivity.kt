@@ -25,13 +25,14 @@ import java.time.LocalDate
 class MainActivity : ComponentActivity() {
     val tasksViewModel: TasksViewModel by viewModels()
     var _taskID: Int = 0
+    val mockTask = Task(1, "Sample Task", "This is a sample description. This task is for sample preview only.", LocalDate.of(2024, 10, 11), Status.NEW)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             YiuYiuYoyoHo_COMP304Sec003_Lab02Theme {
                 MainScreen()
-
             }
         }
     }
@@ -39,7 +40,6 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun MainScreen() {
         val navController = rememberNavController()
-        val mockTask = Task(1, "Sample Task", "This is a sample description. This task is for sample preview only.", LocalDate.of(2024, 10, 11), Status.NEW)
         NavHost(navController = navController, startDestination = Activities.HomeActivity.route) {
             composable(Activities.HomeActivity.route) {
                 HomeActivity(
@@ -48,7 +48,6 @@ class MainActivity : ComponentActivity() {
                         navController.navigate(
                         "${Activities.ViewTaskActivity.route}/${task.id}")
                         _taskID = task.id
-                        Log.d("Main Home Call", "I am Calling ${_taskID}")
                     },
                             navigationToCreateActivity = {
                         navController.navigate("${Activities.CreateTaskActivity.route}")
@@ -58,11 +57,7 @@ class MainActivity : ComponentActivity() {
             }
 
             composable(route = "${Activities.ViewTaskActivity.route}/{taskID}") {
-//                    backStackEntry ->
-//                val taskID = backStackEntry.arguments?.getString("taskID")?.toIntOrNull() ?: 0
-                Log.d("Main View Call", "I am Calling ${_taskID}")
                 val taskID = _taskID
-                //Log.d("MainActivity", "Retrieved taskID: $taskID")
                 val currentTask = tasksViewModel.getTaskByID(taskID)
 
                 if (currentTask != null) {
@@ -77,7 +72,7 @@ class MainActivity : ComponentActivity() {
                     )
                 }
                 else{
-                    Log.d("Get ID", "Failed getting ID")
+                    Log.d("Main Activity", "ViewTaskActivity Failed")
                 }
 
             }
@@ -96,7 +91,7 @@ class MainActivity : ComponentActivity() {
                     )
                 }
                 else{
-                    Log.d("Get ID", "Failed getting ID")
+                    Log.d("Main Activity", "EditTaskActivity Failed")
                 }
 
             }

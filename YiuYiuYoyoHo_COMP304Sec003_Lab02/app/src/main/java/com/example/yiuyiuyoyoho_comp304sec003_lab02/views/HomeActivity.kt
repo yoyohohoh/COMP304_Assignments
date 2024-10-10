@@ -17,6 +17,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.example.yiuyiuyoyoho_comp304sec003_lab02.data.Task
 import com.example.yiuyiuyoyoho_comp304sec003_lab02.viewmodel.TasksViewModel
@@ -39,7 +41,8 @@ fun HomeActivity(tasksViewModel: TasksViewModel, navigationToViewActivity:(task:
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {navigationToCreateActivity()}
+                onClick = {navigationToCreateActivity()},
+                modifier = Modifier.semantics { contentDescription = "Create Task" }
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
