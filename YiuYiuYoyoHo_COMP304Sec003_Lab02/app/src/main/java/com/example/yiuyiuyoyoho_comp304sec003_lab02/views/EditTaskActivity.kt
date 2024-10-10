@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -93,7 +94,9 @@ fun EditTaskActivity(task: Task, navigationToHomeActivity:() -> Unit, tasksViewM
                 onClick = {
                     tasksViewModel.updateTask(updateTask)
                     navigationToHomeActivity()},
-                modifier = Modifier.semantics { contentDescription = "Save Task" }
+                modifier = Modifier
+                    .semantics { contentDescription = "Save Task" }
+                    .size(80.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.Done,
@@ -215,11 +218,3 @@ fun EditTaskActivity(task: Task, navigationToHomeActivity:() -> Unit, tasksViewM
         }
     )
 }
-
-
-//@Composable
-//@Preview
-//fun EditTaskPreview(){
-//    EditTaskActivity(Task(1, "Sample Task", "This is a sample description. This task is for sample preview only.", LocalDate.of(2024, 10, 11), Status.NEW),
-//        navigationToHomeActivity = {})
-//}

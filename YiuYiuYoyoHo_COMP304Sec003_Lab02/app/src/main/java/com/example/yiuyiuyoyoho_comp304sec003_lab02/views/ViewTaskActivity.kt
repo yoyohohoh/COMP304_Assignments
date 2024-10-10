@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
@@ -58,7 +59,9 @@ fun ViewTaskActivity(task: Task, navigationToHomeActivity:() -> Unit, navigation
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {navigationToEditActivity()},
-                modifier = Modifier.semantics { contentDescription = "Edit Task" }
+                modifier = Modifier
+                    .semantics { contentDescription = "Edit Task" }
+                    .size(80.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.Edit,

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
@@ -42,7 +43,9 @@ fun HomeActivity(tasksViewModel: TasksViewModel, navigationToViewActivity:(task:
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {navigationToCreateActivity()},
-                modifier = Modifier.semantics { contentDescription = "Create Task" }
+                modifier = Modifier
+                    .semantics { contentDescription = "Create Task" }
+                    .size(80.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
