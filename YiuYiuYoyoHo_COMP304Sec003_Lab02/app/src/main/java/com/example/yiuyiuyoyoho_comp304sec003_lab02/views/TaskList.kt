@@ -2,6 +2,7 @@ package com.example.yiuyiuyoyoho_comp304sec003_lab02.views
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -42,8 +43,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.yiuyiuyoyoho_comp304sec003_lab02.data.Status
 import com.example.yiuyiuyoyoho_comp304sec003_lab02.data.Task
+import com.example.yiuyiuyoyoho_comp304sec003_lab02.navigation.Activities
+import com.example.yiuyiuyoyoho_comp304sec003_lab02.ui.StatusDot
 import com.example.yiuyiuyoyoho_comp304sec003_lab02.viewmodel.TasksViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -51,23 +57,28 @@ import java.util.Locale
 
 
 @Composable
-fun TaskList(tasksViewModel: TasksViewModel) {
+fun TaskList(
+    onTaskClicked: (Task) -> Unit,
+    tasksViewModel: TasksViewModel) {
     val tasks by tasksViewModel.tasks.collectAsState()
+    val navController = rememberNavController()
     LazyColumn(
         modifier = Modifier.padding(10.dp)
     ) {
         items(tasks) { task ->
-            TaskItem(task, tasksViewModel)
+            TaskItem(task, tasksViewModel, onTaskClicked)
         }
     }
-
 }
 
 @Composable
-fun TaskItem(task: Task,tasksViewModel: TasksViewModel) {
+fun TaskItem(task: Task,tasksViewModel: TasksViewModel, onTaskClicked: (Task) -> Unit) {
     val expanded = remember { mutableStateOf(false) }
     ElevatedCard(
         modifier = Modifier
+            .clickable {
+                onTaskClicked(task)
+            }
             .fillMaxWidth()
             .padding(6.dp)
     ) {
@@ -97,7 +108,13 @@ fun TaskItem(task: Task,tasksViewModel: TasksViewModel) {
                 fontSize = 18.sp,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
-                    .background(color = Color.LightGray, shape = RoundedCornerShape(10.dp))
+                    .background(
+                        color = when (task.status) {
+                            Status.NEW -> Color(0xFF89e18c)
+                            Status.PENDING -> Color(0xFFcb5f5f)
+                            Status.CLOSED -> Color.Gray
+                        }, shape = RoundedCornerShape(10.dp)
+                    )
                     .padding(all = 6.dp)
             )
 
@@ -134,37 +151,8 @@ fun TaskItem(task: Task,tasksViewModel: TasksViewModel) {
                 )
 
             }
-
-
-            StatusDot(task.status)
-
-
         }
     }
 }
 
-@Composable
-fun StatusDot(status: Status) {
-    val color = when (status) {
-        Status.NEW -> Color(0xFF89e18c)
-        Status.PENDING -> Color(0xFFcb5f5f)
-        Status.CLOSED -> Color.Gray
-    }
 
-    Box(
-        modifier = Modifier.size(12.dp),
-        //contentAlignment = Alignment.Center
-    ) {
-        Box(
-            modifier = Modifier
-                .size(16.dp)
-                .background(color, shape = CircleShape)
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewTaskList() {
-
-}
