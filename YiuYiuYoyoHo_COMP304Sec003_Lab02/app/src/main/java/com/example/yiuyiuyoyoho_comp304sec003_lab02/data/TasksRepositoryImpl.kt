@@ -42,6 +42,11 @@ class TasksRepositoryImpl : TasksRepository {
         return tasks
     }
 
+    override fun getTaskByID(taskID: Int): Task? {
+        val task = _tasks.value.find { it.id == taskID }
+        return task ?: null
+    }
+
     override fun addTask(task: Task) {
         _tasks.value = _tasks.value.toMutableList().apply { add(task) }
     }

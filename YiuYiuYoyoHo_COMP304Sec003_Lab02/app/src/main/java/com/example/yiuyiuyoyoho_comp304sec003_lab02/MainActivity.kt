@@ -43,8 +43,9 @@ class MainActivity : ComponentActivity() {
             composable(Activities.HomeActivity.route) {
                 HomeActivity(
                     tasksViewModel = tasksViewModel,
-                    navigationToViewActivity = {
-                        navController.navigate("${Activities.ViewTaskActivity.route}")
+                    navigationToViewActivity = {taskID ->
+                        navController.navigate(
+                        "${Activities.ViewTaskActivity.route}/$taskID")
                     },
                             navigationToCreateActivity = {
                         navController.navigate("${Activities.CreateTaskActivity.route}")
@@ -52,27 +53,47 @@ class MainActivity : ComponentActivity() {
                 )
             }
 
-            composable(Activities.ViewTaskActivity.route) {
-                ViewTaskActivity(
-                    task = mockTask,
-                    navigationToHomeActivity = {
-                        navController.navigate("${Activities.HomeActivity.route}")
-                    },
-                    navigationToEditActivity = {
-                        navController.navigate("${Activities.EditTaskActivity.route}")
-                    }
-                )
+            composable(
+                route = "${Activities.ViewTaskActivity.route}/{taskID}") {
+//                    backStackEntry ->
+//                val taskID = backStackEntry.arguments?.getString("taskID")?.toIntOrNull() ?: 0
+                val taskID = 2
+                Log.d("MainActivity", "Retrieved taskID: $taskID")
+                val currentTask = tasksViewModel.getTaskByID(taskID)
+
+                if (currentTask != null) {
+                    ViewTaskActivity(
+                        task = currentTask,
+                        navigationToHomeActivity = {
+                            navController.navigate("${Activities.HomeActivity.route}")
+                        },
+                        navigationToEditActivity = {
+                            navController.navigate("${Activities.EditTaskActivity.route}/$taskID")
+                        }
+                    )
+                }
+                else{
+                    Log.d("Get ID", "Failed getting ID")
+                }
 
             }
 
-            composable(Activities.EditTaskActivity.route) {
-                EditTaskActivity(
-                    task = mockTask,
-                    navigationToHomeActivity = {
-                        navController.navigate("${Activities.HomeActivity.route}")
-                    },
-                    tasksViewModel = tasksViewModel
-                )
+            composable(route = "${Activities.EditTaskActivity.route}/{taskID}") {
+                val taskID =1
+                val currentTask = tasksViewModel.getTaskByID(taskID)
+
+                if (currentTask != null) {
+                    EditTaskActivity(
+                        task = currentTask,
+                        navigationToHomeActivity = {
+                            navController.navigate("${Activities.HomeActivity.route}")
+                        },
+                        tasksViewModel = tasksViewModel
+                    )
+                }
+                else{
+                    Log.d("Get ID", "Failed getting ID")
+                }
 
             }
 

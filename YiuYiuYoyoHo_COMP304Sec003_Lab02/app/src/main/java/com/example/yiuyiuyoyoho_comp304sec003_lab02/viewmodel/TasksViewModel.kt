@@ -22,6 +22,10 @@ class TasksViewModel: ViewModel() {
             initialValue = emptyList()
         )
 
+    fun getTaskByID(taskID: Int): Task? {
+        return repository.getTaskByID(taskID)
+    }
+
     fun addTask(task: Task) {
         viewModelScope.launch {
             repository.addTask(task)

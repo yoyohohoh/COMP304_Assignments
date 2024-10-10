@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.flowOf
 
 interface TasksRepository {
     fun loadTasks(): Flow<List<Task>>
+    fun getTaskByID(taskID: Int): Task?
     fun addTask(task: Task)
     fun updateTask(task: Task)
 }
