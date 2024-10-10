@@ -24,9 +24,7 @@ class TasksViewModel: ViewModel() {
 
     fun addTask(task: Task) {
         viewModelScope.launch {
-            Log.d("Adding Task", "")
             repository.addTask(task)
-            //Log.d("Adding Task", "")
         }
     }
 

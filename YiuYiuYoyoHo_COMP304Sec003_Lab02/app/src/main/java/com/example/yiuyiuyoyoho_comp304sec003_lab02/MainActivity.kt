@@ -70,7 +70,8 @@ class MainActivity : ComponentActivity() {
                     task = mockTask,
                     navigationToHomeActivity = {
                         navController.navigate("${Activities.HomeActivity.route}")
-                    }
+                    },
+                    tasksViewModel = tasksViewModel
                 )
 
             }

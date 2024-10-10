@@ -202,7 +202,7 @@ fun CreateTaskActivity(navigationToHomeActivity:() -> Unit, tasksViewModel: Task
                                 expanded.value = false},
                             trailingIcon = { StatusDot(Status.CLOSED) }
                         )
-                        }
+                    }
 
                     Text(text = "Due Date  ")
 
