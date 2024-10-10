@@ -4,7 +4,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -19,7 +24,7 @@ import com.example.yiuyiuyoyoho_comp304sec003_lab02.viewmodel.TasksViewModel
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun HomeActivity(tasksViewModel: TasksViewModel, navigationToViewActivity:(task: Task) -> Unit) {
+fun HomeActivity(tasksViewModel: TasksViewModel, navigationToViewActivity:(task: Task) -> Unit, navigationToCreateActivity:() -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -31,6 +36,16 @@ fun HomeActivity(tasksViewModel: TasksViewModel, navigationToViewActivity:(task:
                 ),
 
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {navigationToCreateActivity()}
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Create"
+                )
+            }
         },
 
         content = { paddingValues ->

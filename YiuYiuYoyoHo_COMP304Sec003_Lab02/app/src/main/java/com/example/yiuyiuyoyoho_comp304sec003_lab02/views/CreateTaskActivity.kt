@@ -1,7 +1,9 @@
 package com.example.yiuyiuyoyoho_comp304sec003_lab02.views
 
 import EditTaskDueDate
-import android.widget.GridLayout.Alignment
+import android.util.Log
+import androidx.activity.viewModels
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,14 +11,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.DatePicker
-import androidx.compose.ui.graphics.Color
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -27,40 +31,52 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.yiuyiuyoyoho_comp304sec003_lab02.data.Status
 import com.example.yiuyiuyoyoho_comp304sec003_lab02.data.Task
+import com.example.yiuyiuyoyoho_comp304sec003_lab02.ui.StatusDot
+import com.example.yiuyiuyoyoho_comp304sec003_lab02.viewmodel.TasksViewModel
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditTaskActivity(task: Task, navigationToHomeActivity:() -> Unit) {
-    var title by remember { mutableStateOf(task.title) }
-    var description by remember { mutableStateOf(task.description ) }
-    var dueDate by remember { mutableStateOf(task.dueDate ) }
-    var status by remember { mutableStateOf(task.status ) }
+fun CreateTaskActivity(navigationToHomeActivity:() -> Unit, tasksViewModel: TasksViewModel) {
+    var title by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+    var dueDate by remember { mutableStateOf(LocalDate.now()) }
+    var status by remember { mutableStateOf(Status.NEW) }
+    val expanded = remember { mutableStateOf(false) }
+
+    val tasks by tasksViewModel.tasks.collectAsState()
+    var id by remember { mutableStateOf(tasks.size + 1) }
+
+    var newTask = Task(id, title, description, dueDate,status)
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "Edit Task")
-                
+                    Text(text = "New Task")
+
                 },
                 colors = TopAppBarDefaults.smallTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary
                 ),
                 navigationIcon = {
                     IconButton(
-                        onClick = {navigationToHomeActivity()},
+                        onClick = {
+                            navigationToHomeActivity()},
                         content = {
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
@@ -74,7 +90,11 @@ fun EditTaskActivity(task: Task, navigationToHomeActivity:() -> Unit) {
 
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {navigationToHomeActivity()}
+                onClick = {
+                    Log.d("Create Ticket", "Task ID: ${newTask.id}")
+
+                    tasksViewModel.addTask(newTask)
+                    navigationToHomeActivity()}
             ) {
                 Icon(
                     imageVector = Icons.Default.Done,
@@ -125,30 +145,80 @@ fun EditTaskActivity(task: Task, navigationToHomeActivity:() -> Unit) {
                         .fillMaxWidth(),
 
 
-                )
+                    )
+
                 Row(
                     modifier = Modifier
+                        .padding(12.dp)
                         .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ){
-                    Text(text = "Due Date")
-                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(text = "Status  ")
+                    Text(
+                        text = status.name,
+                        fontSize = 18.sp,
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                            .background(
+                                color = when (status) {
+                                    Status.NEW -> Color(0xFF89e18c)
+                                    Status.PENDING -> Color(0xFFcb5f5f)
+                                    Status.CLOSED -> Color.Gray
+                                },
+                                shape = RoundedCornerShape(10.dp)
+                            )
+                            .padding(all = 6.dp)
+                    )
+
+                    IconButton(
+                        onClick = { expanded.value = true },
+                        modifier = Modifier
+                    ) {
+                        Icon(Icons.Default.ArrowDropDown, contentDescription = "Dropdown menu")
+                    }
+
+
+                    DropdownMenu(expanded = expanded.value, onDismissRequest = { expanded.value = false }) {
+                        DropdownMenuItem(
+                            text = { Text("Mark It As") },
+                            onClick = { /* Handle edit! */ },
+                        )
+                        HorizontalDivider()
+                        DropdownMenuItem(
+                            text = { Text("NEW") },
+                            onClick = {status = Status.NEW
+                                expanded.value = false},
+                            trailingIcon = { StatusDot(Status.NEW) }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("PENDING") },
+                            onClick = {status = Status.PENDING
+                                expanded.value = false},
+                            trailingIcon = { StatusDot(Status.PENDING) }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("CLOSED") },
+                            onClick = {status = Status.CLOSED
+                                expanded.value = false},
+                            trailingIcon = { StatusDot(Status.CLOSED) }
+                        )
+                        }
+
+                    Text(text = "Due Date  ")
+
                     EditTaskDueDate(dueDate) { newDate ->
                         dueDate = newDate
                     }
                 }
-
-
-
             }
         }
     )
 }
 
 
-@Composable
-@Preview
-fun EditTaskPreview(){
-    EditTaskActivity(Task(1, "Sample Task", "This is a sample description. This task is for sample preview only.", LocalDate.of(2024, 10, 11), Status.NEW),
-        navigationToHomeActivity = {})
-}
+//@Composable
+//@Preview
+//fun CreateTaskPreview(){
+//    val tasksViewModel: TasksViewModel by viewModels()
+//    CreateTaskActivity(tasksViewModel = tasksViewModel, navigationToHomeActivity = {})
+//}

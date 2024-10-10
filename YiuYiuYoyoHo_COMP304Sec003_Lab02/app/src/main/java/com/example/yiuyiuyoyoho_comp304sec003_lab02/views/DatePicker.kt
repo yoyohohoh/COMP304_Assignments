@@ -1,5 +1,6 @@
 import android.app.DatePickerDialog
 import android.widget.DatePicker
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
@@ -48,20 +50,18 @@ fun EditTaskDueDate(taskDueDate: LocalDate, onDateChange: (LocalDate) -> Unit) {
     )
 
     // Display the date in a TextField
-    TextField(
-        value = selectedDate,
-        onValueChange = {},
-        readOnly = true,
+    Card(
         modifier = Modifier
-            .width (120.dp)
-            .height(50.dp)
-            .clickable { datePickerDialog.show() },
-        singleLine = true,
-        shape = RectangleShape,
-        textStyle = TextStyle(
+            .clickable {
+                datePickerDialog.show()
+            }) {
+        Text(
+            text = selectedDate,
+            modifier = Modifier
+                .padding(12.dp)
+                .align(Alignment.CenterHorizontally)
         )
-
-    )
+    }
 }
 
 @Preview(showBackground = true)

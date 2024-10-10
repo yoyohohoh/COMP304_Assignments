@@ -43,7 +43,7 @@ class TasksRepositoryImpl : TasksRepository {
     }
 
     override fun addTask(task: Task) {
-        //tasks.add(task)
+        _tasks.value = _tasks.value.toMutableList().apply { add(task) }
     }
 
     override fun updateTask(updatedTask: Task) {

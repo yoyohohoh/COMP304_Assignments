@@ -1,5 +1,6 @@
 package com.example.yiuyiuyoyoho_comp304sec003_lab02.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.yiuyiuyoyoho_comp304sec003_lab02.data.Status
@@ -23,7 +24,9 @@ class TasksViewModel: ViewModel() {
 
     fun addTask(task: Task) {
         viewModelScope.launch {
+            Log.d("Adding Task", "")
             repository.addTask(task)
+            //Log.d("Adding Task", "")
         }
     }
 

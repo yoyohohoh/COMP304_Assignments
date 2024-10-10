@@ -15,6 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.yiuyiuyoyoho_comp304sec003_lab02.data.Status
 import com.example.yiuyiuyoyoho_comp304sec003_lab02.data.Task
 import com.example.yiuyiuyoyoho_comp304sec003_lab02.navigation.Activities
+import com.example.yiuyiuyoyoho_comp304sec003_lab02.views.CreateTaskActivity
 import com.example.yiuyiuyoyoho_comp304sec003_lab02.views.EditTaskActivity
 import com.example.yiuyiuyoyoho_comp304sec003_lab02.views.HomeActivity
 import com.example.yiuyiuyoyoho_comp304sec003_lab02.views.ViewTaskActivity
@@ -38,12 +39,15 @@ class MainActivity : ComponentActivity() {
     fun MainScreen() {
         val navController = rememberNavController()
         val mockTask = Task(1, "Sample Task", "This is a sample description. This task is for sample preview only.", LocalDate.of(2024, 10, 11), Status.NEW)
-        NavHost(navController = navController, startDestination = Activities.EditTaskActivity.route) {
+        NavHost(navController = navController, startDestination = Activities.HomeActivity.route) {
             composable(Activities.HomeActivity.route) {
                 HomeActivity(
                     tasksViewModel = tasksViewModel,
                     navigationToViewActivity = {
                         navController.navigate("${Activities.ViewTaskActivity.route}")
+                    },
+                            navigationToCreateActivity = {
+                        navController.navigate("${Activities.CreateTaskActivity.route}")
                     }
                 )
             }
@@ -67,6 +71,16 @@ class MainActivity : ComponentActivity() {
                     navigationToHomeActivity = {
                         navController.navigate("${Activities.HomeActivity.route}")
                     }
+                )
+
+            }
+
+            composable(Activities.CreateTaskActivity.route) {
+                CreateTaskActivity(
+                    navigationToHomeActivity = {
+                        navController.navigate("${Activities.HomeActivity.route}")
+                    },
+                    tasksViewModel = tasksViewModel
                 )
 
             }
