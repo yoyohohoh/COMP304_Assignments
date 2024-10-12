@@ -96,8 +96,40 @@ fun CreateTaskActivity(navigationToHomeActivity:() -> Unit, tasksViewModel: Task
                 onClick = {
                     Log.d("Create Ticket", "Task ID: ${newTask.id}")
 
-                    tasksViewModel.addTask(newTask)
-                    navigationToHomeActivity()},
+                    when {
+                        newTask.title.isNotBlank() && newTask.description.isNotBlank() -> {
+                            tasksViewModel.addTask(newTask)
+                            navigationToHomeActivity()
+                        }
+
+                        newTask.title.isBlank() && newTask.description.isNotBlank() -> {
+                            val taskWithDefaultTitle = Task(
+                                newTask.id,
+                                title = "New Task",
+                                description = newTask.description,
+                                dueDate = newTask.dueDate,
+                                status = newTask.status
+                            )
+                            tasksViewModel.addTask(taskWithDefaultTitle)
+                            navigationToHomeActivity()
+                        }
+
+                        newTask.title.isNotBlank() && newTask.description.isBlank() -> {
+                            val taskWithDefaultDescription = Task(
+                                newTask.id,
+                                title = newTask.title,
+                                description = "",
+                                dueDate = newTask.dueDate,
+                                status = newTask.status
+                            )
+                            tasksViewModel.addTask(taskWithDefaultDescription)
+                            navigationToHomeActivity()
+                        }
+
+                        else -> {
+                            navigationToHomeActivity()
+                        }
+                    }},
                 modifier = Modifier
                     .semantics { contentDescription = "Save Task" }
                     .size(80.dp)
