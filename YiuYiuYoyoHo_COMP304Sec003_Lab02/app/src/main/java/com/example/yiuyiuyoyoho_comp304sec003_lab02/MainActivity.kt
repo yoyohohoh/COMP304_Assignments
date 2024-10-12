@@ -22,6 +22,7 @@ import com.example.yiuyiuyoyoho_comp304sec003_lab02.views.ViewTaskActivity
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import com.example.yiuyiuyoyoho_comp304sec003_lab02.data.Status
 
 class MainActivity : ComponentActivity() {
     private val tasksViewModel: TasksViewModel by viewModels()
@@ -69,14 +70,14 @@ class MainActivity : ComponentActivity() {
             composable(Activities.HomeActivity.route) {
                 HomeActivity(
                     tasksViewModel = tasksViewModel,
-                    navigationToViewActivity = {task ->
+                    navigationToViewActivity = { task ->
                         navController.navigate(
                         "${Activities.ViewTaskActivity.route}/${task.id}")
                         _taskID = task.id
                     },
                             navigationToCreateActivity = {
                         navController.navigate(Activities.CreateTaskActivity.route)
-                    }
+                    }, filter = listOf(Status.PENDING, Status.NEW, Status.CLOSED)
 
                 )
             }
@@ -132,11 +133,33 @@ class MainActivity : ComponentActivity() {
             }
 
             composable(Activities.OpenTaskActivity.route) {
+                HomeActivity(
+                    tasksViewModel = tasksViewModel,
+                    navigationToViewActivity = { task ->
+                        navController.navigate(
+                            "${Activities.ViewTaskActivity.route}/${task.id}")
+                        _taskID = task.id
+                    },
+                    navigationToCreateActivity = {
+                        navController.navigate(Activities.CreateTaskActivity.route)
+                    }, filter = listOf(Status.PENDING, Status.NEW)
 
+                )
             }
 
             composable(Activities.ClosedTaskActivity.route) {
+                HomeActivity(
+                    tasksViewModel = tasksViewModel,
+                    navigationToViewActivity = { task ->
+                        navController.navigate(
+                            "${Activities.ViewTaskActivity.route}/${task.id}")
+                        _taskID = task.id
+                    },
+                    navigationToCreateActivity = {
+                        navController.navigate(Activities.CreateTaskActivity.route)
+                    }, filter = listOf(Status.CLOSED)
 
+                )
             }
 
 

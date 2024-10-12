@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -21,13 +20,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.example.yiuyiuyoyoho_comp304sec003_lab02.data.Status
 import com.example.yiuyiuyoyoho_comp304sec003_lab02.data.Task
 import com.example.yiuyiuyoyoho_comp304sec003_lab02.viewmodel.TasksViewModel
 
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun HomeActivity(tasksViewModel: TasksViewModel, navigationToViewActivity:(task: Task) -> Unit, navigationToCreateActivity:() -> Unit) {
+fun HomeActivity(tasksViewModel: TasksViewModel, navigationToViewActivity:(task: Task) -> Unit, navigationToCreateActivity:() -> Unit, filter: List<Status>) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -62,7 +62,7 @@ fun HomeActivity(tasksViewModel: TasksViewModel, navigationToViewActivity:(task:
                     .padding(paddingValues)
                     .padding(16.dp) // Optional extra padding for content
             ) {
-                TaskList(navigationToViewActivity, tasksViewModel)
+                TaskList(navigationToViewActivity, tasksViewModel, filter)
             }
         }
     )
