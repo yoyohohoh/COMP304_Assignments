@@ -5,4 +5,6 @@ sealed class Activities (val route: String){
     object CreateTaskActivity : Activities("createTask")
     object ViewTaskActivity : Activities("viewTask/{taskID}")
     object EditTaskActivity : Activities("editTask/{taskID}")
+    object OpenTaskActivity: Activities("openTask")
+    object ClosedTaskActivity: Activities("closedTask")
 }
