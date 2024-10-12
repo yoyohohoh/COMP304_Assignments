@@ -20,7 +20,9 @@ import com.example.yiuyiuyoyoho_comp304sec003_lab02.navigation.Activities
 
 @Composable
 fun TasksBottonNavigation(
-    onHomeClicked: () -> Unit
+    onHomeClicked: () -> Unit,
+    onOpenTaskClicked: () -> Unit,
+    onClosedTaskClicked: () -> Unit
 ){
     val items = listOf(Activities.HomeActivity, Activities.OpenTaskActivity, Activities.ClosedTaskActivity)
     val selectedItem = remember { mutableStateOf(items[0]) }
@@ -47,7 +49,7 @@ fun TasksBottonNavigation(
         NavigationBarItem(
             selected = selectedItem.value == Activities.OpenTaskActivity,
             onClick = {
-                onHomeClicked()
+                onOpenTaskClicked()
                 selectedItem.value = Activities.HomeActivity
             },
             icon = {
@@ -61,7 +63,7 @@ fun TasksBottonNavigation(
         NavigationBarItem(
             selected = selectedItem.value == Activities.ClosedTaskActivity,
             onClick = {
-                onHomeClicked()
+                onClosedTaskClicked()
                 selectedItem.value = Activities.HomeActivity
             },
             icon = {
@@ -77,5 +79,5 @@ fun TasksBottonNavigation(
 @Preview
 @Composable
 fun PreviewBottom(){
-    TasksBottonNavigation(onHomeClicked  = {})
+    TasksBottonNavigation(onHomeClicked  = {}, onOpenTaskClicked  = {}, onClosedTaskClicked  = {})
 }
