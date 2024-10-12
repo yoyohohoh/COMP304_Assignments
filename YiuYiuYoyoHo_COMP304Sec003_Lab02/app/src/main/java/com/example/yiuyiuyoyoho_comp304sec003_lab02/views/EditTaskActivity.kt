@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -29,6 +30,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
@@ -92,7 +94,22 @@ fun EditTaskActivity(task: Task, navigationToHomeActivity:() -> Unit, tasksViewM
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    tasksViewModel.updateTask(updateTask)
+                    val originalTask = tasksViewModel.getTaskByID(updateTask.id)
+
+                    when {
+                        updateTask.title.isBlank() -> {
+                            val updatedTaskWithOriginalTitle = updateTask.copy(
+                                title = "Untitled Task"
+                            )
+                            tasksViewModel.updateTask(updatedTaskWithOriginalTitle)
+                            navigationToHomeActivity()
+                        }
+
+                        else -> {
+                            tasksViewModel.updateTask(updateTask)
+                            navigationToHomeActivity()
+                        }
+                    }
                     navigationToHomeActivity()},
                 modifier = Modifier
                     .semantics { contentDescription = "Save Task" }
@@ -218,3 +235,4 @@ fun EditTaskActivity(task: Task, navigationToHomeActivity:() -> Unit, tasksViewM
         }
     )
 }
+
