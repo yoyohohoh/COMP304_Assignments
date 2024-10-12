@@ -1,5 +1,6 @@
 package com.example.yiuyiuyoyoho_comp304sec003_lab02.views
 
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,12 +23,19 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.example.yiuyiuyoyoho_comp304sec003_lab02.data.Status
 import com.example.yiuyiuyoyoho_comp304sec003_lab02.data.Task
+import com.example.yiuyiuyoyoho_comp304sec003_lab02.navigation.ContentType
 import com.example.yiuyiuyoyoho_comp304sec003_lab02.viewmodel.TasksViewModel
 
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun HomeActivity(tasksViewModel: TasksViewModel, navigationToViewActivity:(task: Task) -> Unit, navigationToCreateActivity:() -> Unit, filter: List<Status>) {
+fun HomeActivity(
+    contentType: ContentType,
+    tasksViewModel: TasksViewModel,
+    navigationToViewActivity:(task: Task) -> Unit,
+    navigationToCreateActivity:() -> Unit,
+    filter: List<Status>
+) {
     Scaffold(
         topBar = {
             TopAppBar(

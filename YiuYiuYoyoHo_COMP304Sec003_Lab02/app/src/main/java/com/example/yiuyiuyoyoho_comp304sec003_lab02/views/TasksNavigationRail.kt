@@ -38,7 +38,7 @@ fun TasksNavigationRail(
     ) {
         NavigationRailItem(
             selected = false,
-            onClick = { onDrawerClicked },
+            onClick = onDrawerClicked,
             icon = {
                 Icon(
                     imageVector = Icons.Default.Menu,

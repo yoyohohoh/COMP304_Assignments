@@ -37,7 +37,7 @@ fun TasksNavigationDrawer(
     onHomeClicked: () -> Unit,
     onOpenTaskClicked: () -> Unit,
     onClosedTaskClicked: () -> Unit,
-    onDrawerClicked: () -> Unit
+    onDrawerClicked: () -> Unit = {}
 ){
     val items = listOf(Activities.HomeActivity, Activities.OpenTaskActivity, Activities.ClosedTaskActivity)
     val selectedItem = remember { mutableStateOf(items[0]) }

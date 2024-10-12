@@ -19,7 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.yiuyiuyoyoho_comp304sec003_lab02.navigation.Activities
 
 @Composable
-fun TasksBottonNavigation(
+fun TasksBottomNavigation(
     onHomeClicked: () -> Unit,
     onOpenTaskClicked: () -> Unit,
     onClosedTaskClicked: () -> Unit
@@ -50,7 +50,7 @@ fun TasksBottonNavigation(
             selected = selectedItem.value == Activities.OpenTaskActivity,
             onClick = {
                 onOpenTaskClicked()
-                selectedItem.value = Activities.HomeActivity
+                selectedItem.value = Activities.OpenTaskActivity
             },
             icon = {
                 Icon(
@@ -64,7 +64,7 @@ fun TasksBottonNavigation(
             selected = selectedItem.value == Activities.ClosedTaskActivity,
             onClick = {
                 onClosedTaskClicked()
-                selectedItem.value = Activities.HomeActivity
+                selectedItem.value = Activities.ClosedTaskActivity
             },
             icon = {
                 Icon(
@@ -74,10 +74,4 @@ fun TasksBottonNavigation(
             }
         )
     }
-}
-
-@Preview
-@Composable
-fun PreviewBottom(){
-    TasksBottonNavigation(onHomeClicked  = {}, onOpenTaskClicked  = {}, onClosedTaskClicked  = {})
 }

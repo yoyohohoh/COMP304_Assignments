@@ -1,13 +1,19 @@
 package com.example.yiuyiuyoyoho_comp304sec003_lab02
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.material3.Text
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.PermanentDrawerSheet
+import androidx.compose.material3.PermanentNavigationDrawer
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import com.example.yiuyiuyoyoho_comp304sec003_lab02.ui.theme.YiuYiuYoyoHo_COMP304Sec003_Lab02Theme
@@ -15,14 +21,24 @@ import com.example.yiuyiuyoyoho_comp304sec003_lab02.viewmodel.TasksViewModel
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.yiuyiuyoyoho_comp304sec003_lab02.navigation.Activities
-import com.example.yiuyiuyoyoho_comp304sec003_lab02.views.CreateTaskActivity
-import com.example.yiuyiuyoyoho_comp304sec003_lab02.views.EditTaskActivity
-import com.example.yiuyiuyoyoho_comp304sec003_lab02.views.HomeActivity
-import com.example.yiuyiuyoyoho_comp304sec003_lab02.views.ViewTaskActivity
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
-import com.example.yiuyiuyoyoho_comp304sec003_lab02.data.Status
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.window.layout.FoldingFeature
+import androidx.window.layout.WindowInfoTracker
+import com.example.yiuyiuyoyoho_comp304sec003_lab02.navigation.ContentType
+import com.example.yiuyiuyoyoho_comp304sec003_lab02.navigation.NavigationType
+import com.example.yiuyiuyoyoho_comp304sec003_lab02.navigation.AppNavigationContent
+import com.example.yiuyiuyoyoho_comp304sec003_lab02.navigation.DeviceFoldPosture
+import com.example.yiuyiuyoyoho_comp304sec003_lab02.navigation.isBookPosture
+import com.example.yiuyiuyoyoho_comp304sec003_lab02.navigation.isSeparating
+import com.example.yiuyiuyoyoho_comp304sec003_lab02.views.TasksNavigationDrawer
+import com.example.yiuyiuyoyoho_comp304sec003_lab02.views.TasksNavigationRail
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     private val tasksViewModel: TasksViewModel by viewModels()
@@ -32,35 +48,161 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        val deviceFoldingPostureFlow = WindowInfoTracker.getOrCreate(this).windowLayoutInfo(this)
+            .flowWithLifecycle(this.lifecycle)
+            .map { layoutInfo ->
+                val foldingFeature =
+                    layoutInfo.displayFeatures
+                        .filterIsInstance<FoldingFeature>()
+                        .firstOrNull()
+                when {
+                    isBookPosture(foldingFeature) ->
+                        DeviceFoldPosture.BookPosture(foldingFeature.bounds)
+
+                    isSeparating(foldingFeature) ->
+                        DeviceFoldPosture.SeparatingPosture(
+                            foldingFeature.bounds,
+                            foldingFeature.orientation
+                        )
+
+                    else -> DeviceFoldPosture.NormalPosture
+                }
+            }
+            .stateIn(
+                scope = lifecycleScope,
+                started = SharingStarted.Eagerly,
+                initialValue = DeviceFoldPosture.NormalPosture
+            )
         setContent {
+            val navHostController = rememberNavController()
+            val windowSizeClass = calculateWindowSizeClass(activity = this)
+            val devicePosture = deviceFoldingPostureFlow.collectAsStateWithLifecycle().value
+            val scope = rememberCoroutineScope()
+            val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
             YiuYiuYoyoHo_COMP304Sec003_Lab02Theme {
-                MainScreen()
-                val windowSizeClass = calculateWindowSizeClass(this)
+                val navigationType: NavigationType
+                val contentType: ContentType
+                when (windowSizeClass.widthSizeClass) {
+                    WindowWidthSizeClass.Compact -> {
+                        navigationType = NavigationType.BottomNavigation
+                        contentType = ContentType.List
+                    }
+
+                    WindowWidthSizeClass.Medium -> {
+                        navigationType = NavigationType.NavigationRail
+                        contentType = if (devicePosture is DeviceFoldPosture.BookPosture
+                            || devicePosture is DeviceFoldPosture.SeparatingPosture
+                        ) {
+                            ContentType.ListAndDetail
+                        } else {
+                            ContentType.List
+                        }
+                    }
+
+                    WindowWidthSizeClass.Expanded -> {
+                        navigationType = if (devicePosture is DeviceFoldPosture.BookPosture) {
+                            NavigationType.NavigationRail
+                        } else {
+                            NavigationType.NavigationDrawer
+                        }
+                        contentType = ContentType.ListAndDetail
+                    }
+
+                    else -> {
+                        navigationType = NavigationType.BottomNavigation
+                        contentType = ContentType.List
+                    }
+                }
+                if (navigationType == NavigationType.NavigationDrawer) {
+                    PermanentNavigationDrawer(
+                        drawerContent = {
+                            PermanentDrawerSheet {
+                                TasksNavigationDrawer(
+                                    onHomeClicked = {
+                                        navHostController.navigate(Activities.HomeActivity.route)
+                                    },
+                                    onOpenTaskClicked = {
+                                        navHostController.navigate(Activities.OpenTaskActivity.route)
+                                    },
+                                    onClosedTaskClicked = {
+                                        navHostController.navigate(Activities.ClosedTaskActivity.route)
+                                    },
+                                    onDrawerClicked = {
+                                        scope.launch {
+                                            drawerState.close()
+                                        }
+                                    }
+
+                                )
+                            }
+                        }
+                    ) {
+                        AppNavigationContent(
+                            tasksViewModel = tasksViewModel,
+                            contentType = contentType,
+                            navigationType = navigationType,
+                            onHomeClicked = {
+                                navHostController.navigate(Activities.HomeActivity.route)
+                            },
+                            onOpenTaskClicked = {
+                                navHostController.navigate(Activities.OpenTaskActivity.route)
+                            },
+                            onClosedTaskClicked = {
+                                navHostController.navigate(Activities.ClosedTaskActivity.route)
+                            },
+                            navHostController = navHostController,
+
+                        )
+                    }
+                } else {
+                    ModalNavigationDrawer(
+                        drawerContent = {
+                            ModalDrawerSheet {
+                                TasksNavigationDrawer(
+                                    onHomeClicked = {
+                                        navHostController.navigate(Activities.HomeActivity.route)
+                                    },
+                                    onOpenTaskClicked = {
+                                        navHostController.navigate(Activities.OpenTaskActivity.route)
+                                    },
+                                    onClosedTaskClicked = {
+                                        navHostController.navigate(Activities.ClosedTaskActivity.route)
+                                    },
+                                    onDrawerClicked = {
+                                        scope.launch {
+                                            drawerState.close()
+                                        }
+                                    }
+                                )
+                            }
+                        },
+                        drawerState = drawerState
+                    ) {
+                        AppNavigationContent(
+                            tasksViewModel = tasksViewModel,
+                            contentType = contentType,
+                            navigationType = navigationType,
+                            onHomeClicked = {
+                                navHostController.navigate(Activities.HomeActivity.route)
+                            },
+                            onOpenTaskClicked = {
+                                navHostController.navigate(Activities.OpenTaskActivity.route)
+                            },
+                            onClosedTaskClicked = {
+                                navHostController.navigate(Activities.ClosedTaskActivity.route)
+                            },
+                            navHostController = navHostController,
+                            onDrawerClicked = {
+                                scope.launch {
+                                    drawerState.open()
+                                }
+                            }
+                        )
+                    }
+
+                }
             }
         }
-    }
-    
-    @Composable
-    fun MyApp(windowSizeClass: WindowSizeClass){
-        when (windowSizeClass.widthSizeClass) {
-            WindowWidthSizeClass.Compact -> {
-                Text("This is a compact layout")
-            }
-
-            WindowWidthSizeClass.Medium -> {
-                Text("This is a medium layout")
-            }
-
-            WindowWidthSizeClass.Expanded -> {
-                Text("This is a expanded layout")
-            }
-
-            else -> {
-                Text("This is a default layout")
-            }
-        }
-
     }
 
     @Composable
@@ -68,99 +210,101 @@ class MainActivity : ComponentActivity() {
         val navController = rememberNavController()
         NavHost(navController = navController, startDestination = Activities.HomeActivity.route) {
             composable(Activities.HomeActivity.route) {
-                HomeActivity(
-                    tasksViewModel = tasksViewModel,
-                    navigationToViewActivity = { task ->
-                        navController.navigate(
-                        "${Activities.ViewTaskActivity.route}/${task.id}")
-                        _taskID = task.id
-                    },
-                            navigationToCreateActivity = {
-                        navController.navigate(Activities.CreateTaskActivity.route)
-                    }, filter = listOf(Status.PENDING, Status.NEW, Status.CLOSED)
-
-                )
+//                HomeActivity(
+//                    contentType = ContentType.List,
+//                    tasksViewModel = tasksViewModel,
+//                    navigationToViewActivity = { task ->
+//                        navController.navigate(
+//                        "${Activities.ViewTaskActivity.route}/${task.id}")
+//                        _taskID = task.id
+//                    },
+//                            navigationToCreateActivity = {
+//                        navController.navigate(Activities.CreateTaskActivity.route)
+//                    }, filter = listOf(Status.PENDING, Status.NEW, Status.CLOSED)
+//
+//                )
             }
 
             composable(route = "${Activities.ViewTaskActivity.route}/{taskID}") {
-                val taskID = _taskID
-                val currentTask = tasksViewModel.getTaskByID(taskID)
-
-                if (currentTask != null) {
-                    ViewTaskActivity(
-                        task = currentTask,
-                        navigationToHomeActivity = {
-                            navController.navigate(Activities.HomeActivity.route)
-                        },
-                        navigationToEditActivity = {
-                            navController.navigate("${Activities.EditTaskActivity.route}/$taskID")
-                        }
-                    )
-                }
-                else{
-                    Log.d("Main Activity", "ViewTaskActivity Failed")
-                }
+//                val taskID = _taskID
+//                val currentTask = tasksViewModel.getTaskByID(taskID)
+//
+//                if (currentTask != null) {
+//                    ViewTaskActivity(
+//                        task = currentTask,
+//                        navigationToHomeActivity = {
+//                            navController.navigate(Activities.HomeActivity.route)
+//                        },
+//                        navigationToEditActivity = {
+//                            navController.navigate("${Activities.EditTaskActivity.route}/$taskID")
+//                        }
+//                    )
+//                }
+//                else{
+//                    Log.d("Main Activity", "ViewTaskActivity Failed")
+//                }
 
             }
 
             composable(route = "${Activities.EditTaskActivity.route}/{taskID}") {
-                val taskID =_taskID
-                val currentTask = tasksViewModel.getTaskByID(taskID)
-
-                if (currentTask != null) {
-                    EditTaskActivity(
-                        task = currentTask,
-                        navigationToHomeActivity = {
-                            navController.navigate(Activities.HomeActivity.route)
-                        },
-                        tasksViewModel = tasksViewModel
-                    )
-                }
-                else{
-                    Log.d("Main Activity", "EditTaskActivity Failed")
-                }
+//                val taskID =_taskID
+//                val currentTask = tasksViewModel.getTaskByID(taskID)
+//
+//                if (currentTask != null) {
+////                    EditTaskActivity(
+////                        task = currentTask,
+////                        navigationToHomeActivity = {
+////                            navController.navigate(Activities.HomeActivity.route)
+////                        },
+////                        tasksViewModel = tasksViewModel
+////                    )
+//                }
+//                else{
+//                    Log.d("Main Activity", "EditTaskActivity Failed")
+//                }
 
             }
 
             composable(Activities.CreateTaskActivity.route) {
-                CreateTaskActivity(
-                    navigationToHomeActivity = {
-                        navController.navigate(Activities.HomeActivity.route)
-                    },
-                    tasksViewModel = tasksViewModel
-                )
+//                CreateTaskActivity(
+//                    navigationToHomeActivity = {
+//                        navController.navigate(Activities.HomeActivity.route)
+//                    },
+//                    tasksViewModel = tasksViewModel
+//                )
 
             }
 
-            composable(Activities.OpenTaskActivity.route) {
-                HomeActivity(
-                    tasksViewModel = tasksViewModel,
-                    navigationToViewActivity = { task ->
-                        navController.navigate(
-                            "${Activities.ViewTaskActivity.route}/${task.id}")
-                        _taskID = task.id
-                    },
-                    navigationToCreateActivity = {
-                        navController.navigate(Activities.CreateTaskActivity.route)
-                    }, filter = listOf(Status.PENDING, Status.NEW)
+//            composable(Activities.OpenTaskActivity.route) {
+//                HomeActivity(
+//                    contentType = ContentType.List,
+//                    navigationToViewActivity = { task ->
+//                        navController.navigate(
+//                            "${Activities.ViewTaskActivity.route}/${task.id}")
+//                        _taskID = task.id
+//                    },
+//                    navigationToCreateActivity = {
+//                        navController.navigate(Activities.CreateTaskActivity.route)
+//                    }, filter = listOf(Status.PENDING, Status.NEW)
+//
+//                )
+//            }
 
-                )
-            }
-
-            composable(Activities.ClosedTaskActivity.route) {
-                HomeActivity(
-                    tasksViewModel = tasksViewModel,
-                    navigationToViewActivity = { task ->
-                        navController.navigate(
-                            "${Activities.ViewTaskActivity.route}/${task.id}")
-                        _taskID = task.id
-                    },
-                    navigationToCreateActivity = {
-                        navController.navigate(Activities.CreateTaskActivity.route)
-                    }, filter = listOf(Status.CLOSED)
-
-                )
-            }
+//            composable(Activities.ClosedTaskActivity.route) {
+//                HomeActivity(
+//                    contentType = ContentType.List,
+//                    tasksViewModel = tasksViewModel,
+//                    navigationToViewActivity = { task ->
+//                        navController.navigate(
+//                            "${Activities.ViewTaskActivity.route}/${task.id}")
+//                        _taskID = task.id
+//                    },
+//                    navigationToCreateActivity = {
+//                        navController.navigate(Activities.CreateTaskActivity.route)
+//                    }, filter = listOf(Status.CLOSED)
+//
+//                )
+//            }
 
 
 
