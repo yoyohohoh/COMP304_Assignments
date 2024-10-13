@@ -65,7 +65,7 @@ fun TasksNavigationRail(
             selected = selectedItem.value == Activities.OpenTaskActivity,
             onClick = {
                 onOpenTaskClicked()
-                selectedItem.value = Activities.HomeActivity
+                selectedItem.value = Activities.OpenTaskActivity
             },
             icon = {
                 Icon(
@@ -79,7 +79,7 @@ fun TasksNavigationRail(
             selected = selectedItem.value == Activities.ClosedTaskActivity,
             onClick = {
                 onClosedTaskClicked()
-                selectedItem.value = Activities.HomeActivity
+                selectedItem.value = Activities.ClosedTaskActivity
             },
             icon = {
                 Icon(

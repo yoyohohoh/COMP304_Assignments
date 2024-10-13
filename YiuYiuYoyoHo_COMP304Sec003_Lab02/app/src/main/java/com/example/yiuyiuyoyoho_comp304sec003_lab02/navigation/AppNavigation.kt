@@ -21,6 +21,10 @@ import com.example.yiuyiuyoyoho_comp304sec003_lab02.views.ViewTaskActivity
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
 import com.example.yiuyiuyoyoho_comp304sec003_lab02.data.Status
 
@@ -30,13 +34,11 @@ fun AppNavigation(
     contentType: ContentType,
     navHostController: NavHostController = rememberNavController()
 ) {
-//    val navHostController = rememberNavController()
-//    //val tasksViewModel = TasksViewModel()
     var _taskID: Int = -1
+    val selectedItem = remember { mutableStateOf<Activities>(Activities.HomeActivity) }
 
     NavHost(navController = navHostController, startDestination = Activities.HomeActivity.route) {
         composable(Activities.HomeActivity.route) {
-            Log.d("App Nevigation","in the Home route, loading")
             HomeActivity(
                 contentType = contentType,
                 tasksViewModel = tasksViewModel,

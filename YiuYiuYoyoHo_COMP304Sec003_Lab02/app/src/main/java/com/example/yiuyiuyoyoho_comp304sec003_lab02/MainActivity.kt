@@ -150,9 +150,9 @@ class MainActivity : ComponentActivity() {
                             onClosedTaskClicked = {
                                 navHostController.navigate(Activities.ClosedTaskActivity.route)
                             },
-                            navHostController = navHostController,
+                            navHostController = navHostController
 
-                        )
+                            )
                     }
                 } else {
                     ModalNavigationDrawer(
@@ -179,6 +179,7 @@ class MainActivity : ComponentActivity() {
                         drawerState = drawerState
                     ) {
                         AppNavigationContent(
+
                             tasksViewModel = tasksViewModel,
                             contentType = contentType,
                             navigationType = navigationType,
@@ -204,110 +205,4 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
-    @Composable
-    fun MainScreen() {
-        val navController = rememberNavController()
-        NavHost(navController = navController, startDestination = Activities.HomeActivity.route) {
-            composable(Activities.HomeActivity.route) {
-//                HomeActivity(
-//                    contentType = ContentType.List,
-//                    tasksViewModel = tasksViewModel,
-//                    navigationToViewActivity = { task ->
-//                        navController.navigate(
-//                        "${Activities.ViewTaskActivity.route}/${task.id}")
-//                        _taskID = task.id
-//                    },
-//                            navigationToCreateActivity = {
-//                        navController.navigate(Activities.CreateTaskActivity.route)
-//                    }, filter = listOf(Status.PENDING, Status.NEW, Status.CLOSED)
-//
-//                )
-            }
-
-            composable(route = "${Activities.ViewTaskActivity.route}/{taskID}") {
-//                val taskID = _taskID
-//                val currentTask = tasksViewModel.getTaskByID(taskID)
-//
-//                if (currentTask != null) {
-//                    ViewTaskActivity(
-//                        task = currentTask,
-//                        navigationToHomeActivity = {
-//                            navController.navigate(Activities.HomeActivity.route)
-//                        },
-//                        navigationToEditActivity = {
-//                            navController.navigate("${Activities.EditTaskActivity.route}/$taskID")
-//                        }
-//                    )
-//                }
-//                else{
-//                    Log.d("Main Activity", "ViewTaskActivity Failed")
-//                }
-
-            }
-
-            composable(route = "${Activities.EditTaskActivity.route}/{taskID}") {
-//                val taskID =_taskID
-//                val currentTask = tasksViewModel.getTaskByID(taskID)
-//
-//                if (currentTask != null) {
-////                    EditTaskActivity(
-////                        task = currentTask,
-////                        navigationToHomeActivity = {
-////                            navController.navigate(Activities.HomeActivity.route)
-////                        },
-////                        tasksViewModel = tasksViewModel
-////                    )
-//                }
-//                else{
-//                    Log.d("Main Activity", "EditTaskActivity Failed")
-//                }
-
-            }
-
-            composable(Activities.CreateTaskActivity.route) {
-//                CreateTaskActivity(
-//                    navigationToHomeActivity = {
-//                        navController.navigate(Activities.HomeActivity.route)
-//                    },
-//                    tasksViewModel = tasksViewModel
-//                )
-
-            }
-
-//            composable(Activities.OpenTaskActivity.route) {
-//                HomeActivity(
-//                    contentType = ContentType.List,
-//                    navigationToViewActivity = { task ->
-//                        navController.navigate(
-//                            "${Activities.ViewTaskActivity.route}/${task.id}")
-//                        _taskID = task.id
-//                    },
-//                    navigationToCreateActivity = {
-//                        navController.navigate(Activities.CreateTaskActivity.route)
-//                    }, filter = listOf(Status.PENDING, Status.NEW)
-//
-//                )
-//            }
-
-//            composable(Activities.ClosedTaskActivity.route) {
-//                HomeActivity(
-//                    contentType = ContentType.List,
-//                    tasksViewModel = tasksViewModel,
-//                    navigationToViewActivity = { task ->
-//                        navController.navigate(
-//                            "${Activities.ViewTaskActivity.route}/${task.id}")
-//                        _taskID = task.id
-//                    },
-//                    navigationToCreateActivity = {
-//                        navController.navigate(Activities.CreateTaskActivity.route)
-//                    }, filter = listOf(Status.CLOSED)
-//
-//                )
-//            }
-
-
-
-    }
-}
 }

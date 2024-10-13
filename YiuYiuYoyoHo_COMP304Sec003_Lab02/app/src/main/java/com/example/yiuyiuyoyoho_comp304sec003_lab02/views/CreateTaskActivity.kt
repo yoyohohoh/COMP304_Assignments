@@ -32,6 +32,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,13 +49,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.yiuyiuyoyoho_comp304sec003_lab02.data.Status
 import com.example.yiuyiuyoyoho_comp304sec003_lab02.data.Task
+import com.example.yiuyiuyoyoho_comp304sec003_lab02.navigation.Activities
 import com.example.yiuyiuyoyoho_comp304sec003_lab02.ui.StatusDot
 import com.example.yiuyiuyoyoho_comp304sec003_lab02.viewmodel.TasksViewModel
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateTaskActivity(navigationToHomeActivity:() -> Unit, tasksViewModel: TasksViewModel) {
+fun CreateTaskActivity(
+    navigationToHomeActivity:() -> Unit,
+    tasksViewModel: TasksViewModel) {
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var dueDate by remember { mutableStateOf(LocalDate.now()) }
@@ -93,9 +97,8 @@ fun CreateTaskActivity(navigationToHomeActivity:() -> Unit, tasksViewModel: Task
 
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {
-                    Log.d("Create Ticket", "Task ID: ${newTask.id}")
 
+                onClick = {
                     when {
                         newTask.title.isNotBlank() && newTask.description.isNotBlank() -> {
                             tasksViewModel.addTask(newTask)
@@ -129,7 +132,8 @@ fun CreateTaskActivity(navigationToHomeActivity:() -> Unit, tasksViewModel: Task
                         else -> {
                             navigationToHomeActivity()
                         }
-                    }},
+                    }
+                          },
                 modifier = Modifier
                     .semantics { contentDescription = "Save Task" }
                     .size(80.dp)
